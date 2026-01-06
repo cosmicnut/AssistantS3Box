@@ -232,7 +232,7 @@ voice_assistant:
   microphone: box_mic
   media_player: speaker_media_player
   micro_wake_word: mww
-  tts_audio_type: mp3
+  # Home Assistant Assist pipeline should be configured to output MP3 to match the announcement pipeline.
   noise_suppression_level: 2
   auto_gain: 31dBFS
   volume_multiplier: 2.0
