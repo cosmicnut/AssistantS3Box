@@ -1,3 +1,8 @@
+# Local standalone configuration that inlines the factory package so it can be
+# built/flashed directly via the ESPHome CLI.
+# Usage:
+# - esphome run esp32-s3-box.local.yaml
+# - esphome upload esp32-s3-box.local.yaml --device <DEVICE_HOSTNAME_OR_PORT>
 ---
 substitutions:
   name: esp32-s3-box
@@ -84,8 +89,11 @@ wifi:
   ap:
   on_connect:
     - script.execute: draw_display
+    - delay: 5s  # Gives time for improv results to be transmitted
+    - ble.disable:
   on_disconnect:
     - script.execute: draw_display
+    - ble.enable:
 
 captive_portal:
 
