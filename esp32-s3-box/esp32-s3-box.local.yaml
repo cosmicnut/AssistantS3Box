@@ -141,19 +141,6 @@ binary_sensor:
               switch.is_on: mute_when_absent
             then:
               - switch.turn_off: mute
-  - platform: touchscreen
-    id: box1_touch
-    name: Box1 Switch
-    touchscreen_id: touch_panel
-    x_min: 228
-    x_max: 292
-    y_min: 140
-    y_max: 204
-    on_press:
-      - homeassistant.service:
-          service: automation.trigger
-          data:
-            entity_id: automation.box1
 
 output:
   - platform: ledc
@@ -173,10 +160,6 @@ light:
 i2c:
   scl: GPIO18
   sda: GPIO8
-
-touchscreen:
-  - platform: ft5x06
-    id: touch_panel
 
 sensor:
   - platform: aht10

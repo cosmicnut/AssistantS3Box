@@ -169,10 +169,6 @@ i2c:
   scl: GPIO18
   sda: GPIO8
 
-touchscreen:
-  - platform: ft5x06
-    id: touch_panel
-
 sensor:
   - platform: aht10
     variant: AHT20
