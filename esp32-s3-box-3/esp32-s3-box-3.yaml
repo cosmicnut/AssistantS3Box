@@ -185,6 +185,8 @@ media_player:
     files:
       - id: timer_finished_sound
         file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
+      - id: wake_word_sound_timer_finished
+        file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
     on_announcement:
       # Stop the wake word (mWW or VA) if the mic is capturing
       - if:
@@ -226,6 +228,8 @@ micro_wake_word:
     - hey_mycroft
     - hey_jarvis
   on_wake_word_detected:
+    - light.turn_on: led
+    - script.execute: play_wake_word_sound
     - voice_assistant.start:
         wake_word: !lambda return wake_word;
 
@@ -239,6 +243,7 @@ voice_assistant:
   auto_gain: 31dBFS
   volume_multiplier: 2.0
   on_listening:
+    - light.turn_on: led
     - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
     - text_sensor.template.publish:
         id: text_request
@@ -523,6 +528,15 @@ script:
             - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
           else:
             - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+  - id: play_wake_word_sound
+    then:
+      - if:
+          condition:
+            lambda: return id(wake_word_sound).state != "Off";
+          then:
+            - media_player.speaker.play_on_device_media_file:
+                media_file: wake_word_sound_timer_finished
+                announcement: true
 
 switch:
   - platform: gpio
@@ -621,6 +635,17 @@ select:
                         switch.is_off: mute
                       then:
                         - micro_wake_word.start
+  - platform: template
+    entity_category: config
+    name: Wake word sound
+    id: wake_word_sound
+    icon: "mdi:music-note"
+    optimistic: true
+    restore_value: true
+    options:
+      - "Off"
+      - "Timer finished"
+    initial_option: "Off"
 
 globals:
   - id: init_in_progress
