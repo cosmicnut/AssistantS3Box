@@ -170,7 +170,7 @@ i2c:
   sda: GPIO8
 
 touchscreen:
-  - platform: gt911
+  - platform: ft5x06
     id: touch_panel
 
 sensor:
