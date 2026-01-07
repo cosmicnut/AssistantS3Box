@@ -136,6 +136,19 @@ binary_sensor:
               switch.is_on: mute_when_absent
             then:
               - switch.turn_off: mute
+  - platform: touchscreen
+    id: box1_touch
+    name: Box1 Switch
+    touchscreen_id: touch_panel
+    x_min: 228
+    x_max: 292
+    y_min: 140
+    y_max: 204
+    on_press:
+      - homeassistant.service:
+          service: automation.trigger
+          data:
+            entity_id: automation.box1
 
 output:
   - platform: ledc
@@ -155,6 +168,21 @@ light:
 i2c:
   scl: GPIO18
   sda: GPIO8
+
+touchscreen:
+  - platform: gt911
+    id: touch_panel
+
+sensor:
+  - platform: aht10
+    variant: AHT20
+    temperature:
+      id: box_temperature
+      name: Temperature
+    humidity:
+      id: box_humidity
+      name: Humidity
+    update_interval: 1s
 
 i2s_audio:
   - id: i2s_audio_bus
@@ -819,7 +847,23 @@ display:
       - id: idle_page
         lambda: |-
           it.fill(id(idle_color));
-          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_idle), ImageAlign::CENTER);
+          if (id(box_temperature).has_state()) {
+            it.printf(20, 20, id(font_request), Color::WHITE, "Temp");
+            it.printf(20, 38, id(font_timer), Color::WHITE, "%.1f°", id(box_temperature).state);
+          } else {
+            it.printf(20, 20, id(font_request), Color::WHITE, "Temp");
+            it.printf(20, 38, id(font_timer), Color::WHITE, "--");
+          }
+          if (id(box_humidity).has_state()) {
+            it.printf(20, 110, id(font_request), Color::WHITE, "Humidity");
+            it.printf(20, 128, id(font_timer), Color::WHITE, "%.1f%%", id(box_humidity).state);
+          } else {
+            it.printf(20, 110, id(font_request), Color::WHITE, "Humidity");
+            it.printf(20, 128, id(font_timer), Color::WHITE, "--");
+          }
+          it.filled_circle(260, 172, 32, Color::WHITE);
+          it.circle(260, 172, 32, Color::BLACK);
+          it.printf(260, 172, id(font_request), Color::BLACK, TextAlign::CENTER, "Box1");
           id(draw_timer_timeline).execute();
           id(draw_active_timer_widget).execute();
       - id: listening_page
