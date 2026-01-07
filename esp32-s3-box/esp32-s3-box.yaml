@@ -843,20 +843,10 @@ display:
       - id: idle_page
         lambda: |-
           it.fill(id(idle_color));
-          if (id(box_temperature).has_state()) {
-            it.printf(20, 20, id(font_request), Color::WHITE, "Temp");
-            it.printf(20, 38, id(font_timer), Color::WHITE, "%.1f°", id(box_temperature).state);
-          } else {
-            it.printf(20, 20, id(font_request), Color::WHITE, "Temp");
-            it.printf(20, 38, id(font_timer), Color::WHITE, "--");
-          }
-          if (id(box_humidity).has_state()) {
-            it.printf(20, 110, id(font_request), Color::WHITE, "Humidity");
-            it.printf(20, 128, id(font_timer), Color::WHITE, "%.1f%%", id(box_humidity).state);
-          } else {
-            it.printf(20, 110, id(font_request), Color::WHITE, "Humidity");
-            it.printf(20, 128, id(font_timer), Color::WHITE, "--");
-          }
+          it.printf(20, 20, id(font_request), Color::WHITE, "Temp");
+          it.printf(20, 38, id(font_timer), Color::WHITE, "--");
+          it.printf(20, 110, id(font_request), Color::WHITE, "Humidity");
+          it.printf(20, 128, id(font_timer), Color::WHITE, "--");
           it.filled_circle(260, 172, 32, Color::WHITE);
           it.circle(260, 172, 32, Color::BLACK);
           it.printf(260, 172, id(font_request), Color::BLACK, TextAlign::CENTER, "Box1");
