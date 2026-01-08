@@ -79,6 +79,8 @@ ota:
 
 logger:
   hardware_uart: USB_SERIAL_JTAG
+  logs:
+    sensor: WARN
 
 wifi:
   ssid: !secret wifi_ssid
