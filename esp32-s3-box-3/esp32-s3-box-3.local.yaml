@@ -25,6 +25,13 @@ substitutions:
   replying_illustration_background_color: "FFFFFF"
   error_illustration_background_color: "000000"
 
+  idle_touch_button_automation_default: automation.box1
+  idle_touch_button_size: "60"
+  idle_touch_button_x_min: "130"
+  idle_touch_button_x_max: "190"
+  idle_touch_button_y_min: "90"
+  idle_touch_button_y_max: "150"
+
   voice_assist_idle_phase_id: "1"
   voice_assist_listening_phase_id: "2"
   voice_assist_thinking_phase_id: "3"
@@ -139,6 +146,23 @@ binary_sensor:
           - ON for at least 10s
         then:
           - button.press: factory_reset_btn
+  - platform: touchscreen
+    id: idle_touch_button
+    name: Idle Button
+    touchscreen_id: touch_panel
+    x_min: ${idle_touch_button_x_min}
+    x_max: ${idle_touch_button_x_max}
+    y_min: ${idle_touch_button_y_min}
+    y_max: ${idle_touch_button_y_max}
+    on_press:
+      - homeassistant.service:
+          service: automation.trigger
+          data:
+            entity_id: !lambda |-
+              if (id(idle_touch_button_automation).state.empty()) {
+                return std::string("${idle_touch_button_automation_default}");
+              }
+              return id(idle_touch_button_automation).state;
   - platform: gpio
     pin:
       number: GPIO21
@@ -187,6 +211,13 @@ i2c:
   - id: bus_b
     sda: GPIO41
     scl: GPIO40
+
+touchscreen:
+  - platform: gt911
+    id: touch_panel
+    i2c_id: bus_a
+    interrupt_pin: GPIO3
+    reset_pin: GPIO1
 
 sensor:
   - platform: aht10
@@ -868,6 +899,15 @@ text_sensor:
           id(text_response).state = (truncated+"...").c_str();
         }
 
+text:
+  - platform: template
+    id: idle_touch_button_automation
+    name: Idle Button Automation
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    initial_value: "${idle_touch_button_automation_default}"
+
 color:
   - id: idle_color
     hex: ${idle_illustration_background_color}
@@ -916,6 +956,10 @@ display:
           };
           it.fill(id(idle_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_idle), ImageAlign::CENTER);
+          const int square_size = ${idle_touch_button_size};
+          const int square_x = (it.get_width() - square_size) / 2;
+          const int square_y = (it.get_height() - square_size) / 2;
+          it.filled_rectangle(square_x, square_y, square_size, square_size, Color::WHITE);
           draw_environment(Color::WHITE);
           id(draw_timer_timeline).execute();
           id(draw_active_timer_widget).execute();
