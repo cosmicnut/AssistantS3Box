@@ -79,6 +79,8 @@ ota:
 
 logger:
   hardware_uart: USB_SERIAL_JTAG
+  logs:
+    sensor: WARN
 
 wifi:
   ssid: !secret wifi_ssid
@@ -169,8 +171,14 @@ sensor:
     variant: AHT20
     temperature:
       name: Temperature
+      id: temperature_sensor
+      on_value:
+        - script.execute: draw_display
     humidity:
       name: Humidity
+      id: humidity_sensor
+      on_value:
+        - script.execute: draw_display
     update_interval: 1s
 
 i2s_audio:
@@ -805,6 +813,14 @@ font:
     size: 30
     glyphsets:
       - ${font_glyphsets}
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 400
+    id: font_environment
+    size: 16
+    glyphsets:
+      - ${font_glyphsets}
 
 text_sensor:
   - id: text_request
@@ -865,27 +881,63 @@ display:
     pages:
       - id: idle_page
         lambda: |-
+          auto draw_environment = [&](Color text_color) {
+            if (!isnan(id(temperature_sensor).state)) {
+              it.printf(6, 6, id(font_environment), text_color, "%.1f°C", id(temperature_sensor).state);
+            }
+            if (!isnan(id(humidity_sensor).state)) {
+              it.printf(it.get_width() - 6, 6, id(font_environment), text_color, TextAlign::TOP_RIGHT, "%.0f%%", id(humidity_sensor).state);
+            }
+          };
           it.fill(id(idle_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_idle), ImageAlign::CENTER);
+          draw_environment(Color::WHITE);
           id(draw_timer_timeline).execute();
           id(draw_active_timer_widget).execute();
       - id: listening_page
         lambda: |-
+          auto draw_environment = [&](Color text_color) {
+            if (!isnan(id(temperature_sensor).state)) {
+              it.printf(6, 6, id(font_environment), text_color, "%.1f°C", id(temperature_sensor).state);
+            }
+            if (!isnan(id(humidity_sensor).state)) {
+              it.printf(it.get_width() - 6, 6, id(font_environment), text_color, TextAlign::TOP_RIGHT, "%.0f%%", id(humidity_sensor).state);
+            }
+          };
           it.fill(id(listening_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_listening), ImageAlign::CENTER);
+          draw_environment(Color::BLACK);
           id(draw_timer_timeline).execute();
       - id: thinking_page
         lambda: |-
+          auto draw_environment = [&](Color text_color) {
+            if (!isnan(id(temperature_sensor).state)) {
+              it.printf(6, 6, id(font_environment), text_color, "%.1f°C", id(temperature_sensor).state);
+            }
+            if (!isnan(id(humidity_sensor).state)) {
+              it.printf(it.get_width() - 6, 6, id(font_environment), text_color, TextAlign::TOP_RIGHT, "%.0f%%", id(humidity_sensor).state);
+            }
+          };
           it.fill(id(thinking_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_thinking), ImageAlign::CENTER);
+          draw_environment(Color::BLACK);
           it.filled_rectangle(20 , 20 , 280 , 30 , Color::WHITE );
           it.rectangle(20 , 20 , 280 , 30 , Color::BLACK );
           it.printf(30, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
           id(draw_timer_timeline).execute();
       - id: replying_page
         lambda: |-
+          auto draw_environment = [&](Color text_color) {
+            if (!isnan(id(temperature_sensor).state)) {
+              it.printf(6, 6, id(font_environment), text_color, "%.1f°C", id(temperature_sensor).state);
+            }
+            if (!isnan(id(humidity_sensor).state)) {
+              it.printf(it.get_width() - 6, 6, id(font_environment), text_color, TextAlign::TOP_RIGHT, "%.0f%%", id(humidity_sensor).state);
+            }
+          };
           it.fill(id(replying_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_replying), ImageAlign::CENTER);
+          draw_environment(Color::BLACK);
           it.filled_rectangle(20 , 20 , 280 , 30 , Color::WHITE );
           it.rectangle(20 , 20 , 280 , 30 , Color::BLACK );
           it.filled_rectangle(20 , 190 , 280 , 30 , Color::WHITE );
@@ -895,24 +947,78 @@ display:
           id(draw_timer_timeline).execute();
       - id: timer_finished_page
         lambda: |-
+          auto draw_environment = [&](Color text_color) {
+            if (!isnan(id(temperature_sensor).state)) {
+              it.printf(6, 6, id(font_environment), text_color, "%.1f°C", id(temperature_sensor).state);
+            }
+            if (!isnan(id(humidity_sensor).state)) {
+              it.printf(it.get_width() - 6, 6, id(font_environment), text_color, TextAlign::TOP_RIGHT, "%.0f%%", id(humidity_sensor).state);
+            }
+          };
           it.fill(id(idle_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_timer_finished), ImageAlign::CENTER);
+          draw_environment(Color::WHITE);
       - id: error_page
         lambda: |-
+          auto draw_environment = [&](Color text_color) {
+            if (!isnan(id(temperature_sensor).state)) {
+              it.printf(6, 6, id(font_environment), text_color, "%.1f°C", id(temperature_sensor).state);
+            }
+            if (!isnan(id(humidity_sensor).state)) {
+              it.printf(it.get_width() - 6, 6, id(font_environment), text_color, TextAlign::TOP_RIGHT, "%.0f%%", id(humidity_sensor).state);
+            }
+          };
           it.fill(id(error_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_error), ImageAlign::CENTER);
+          draw_environment(Color::WHITE);
       - id: no_ha_page
         lambda: |-
+          auto draw_environment = [&](Color text_color) {
+            if (!isnan(id(temperature_sensor).state)) {
+              it.printf(6, 6, id(font_environment), text_color, "%.1f°C", id(temperature_sensor).state);
+            }
+            if (!isnan(id(humidity_sensor).state)) {
+              it.printf(it.get_width() - 6, 6, id(font_environment), text_color, TextAlign::TOP_RIGHT, "%.0f%%", id(humidity_sensor).state);
+            }
+          };
           it.image((it.get_width() / 2), (it.get_height() / 2), id(error_no_ha), ImageAlign::CENTER);
+          draw_environment(Color::WHITE);
       - id: no_wifi_page
         lambda: |-
+          auto draw_environment = [&](Color text_color) {
+            if (!isnan(id(temperature_sensor).state)) {
+              it.printf(6, 6, id(font_environment), text_color, "%.1f°C", id(temperature_sensor).state);
+            }
+            if (!isnan(id(humidity_sensor).state)) {
+              it.printf(it.get_width() - 6, 6, id(font_environment), text_color, TextAlign::TOP_RIGHT, "%.0f%%", id(humidity_sensor).state);
+            }
+          };
           it.image((it.get_width() / 2), (it.get_height() / 2), id(error_no_wifi), ImageAlign::CENTER);
+          draw_environment(Color::WHITE);
       - id: initializing_page
         lambda: |-
+          auto draw_environment = [&](Color text_color) {
+            if (!isnan(id(temperature_sensor).state)) {
+              it.printf(6, 6, id(font_environment), text_color, "%.1f°C", id(temperature_sensor).state);
+            }
+            if (!isnan(id(humidity_sensor).state)) {
+              it.printf(it.get_width() - 6, 6, id(font_environment), text_color, TextAlign::TOP_RIGHT, "%.0f%%", id(humidity_sensor).state);
+            }
+          };
           it.fill(id(loading_color));
           it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_initializing), ImageAlign::CENTER);
+          draw_environment(Color::WHITE);
       - id: muted_page
         lambda: |-
+          auto draw_environment = [&](Color text_color) {
+            if (!isnan(id(temperature_sensor).state)) {
+              it.printf(6, 6, id(font_environment), text_color, "%.1f°C", id(temperature_sensor).state);
+            }
+            if (!isnan(id(humidity_sensor).state)) {
+              it.printf(it.get_width() - 6, 6, id(font_environment), text_color, TextAlign::TOP_RIGHT, "%.0f%%", id(humidity_sensor).state);
+            }
+          };
           it.fill(Color::BLACK);
+          draw_environment(Color::WHITE);
           id(draw_timer_timeline).execute();
           id(draw_active_timer_widget).execute();
