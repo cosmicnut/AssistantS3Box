@@ -904,6 +904,7 @@ text:
     id: idle_touch_button_automation
     name: Idle Button Automation
     entity_category: config
+    mode: text
     optimistic: true
     restore_value: true
     initial_value: "${idle_touch_button_automation_default}"
