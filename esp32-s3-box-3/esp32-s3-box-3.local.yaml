@@ -25,7 +25,7 @@ substitutions:
   replying_illustration_background_color: "FFFFFF"
   error_illustration_background_color: "000000"
 
-  idle_touch_button_automation: automation.box1
+  idle_touch_button_automation_default: automation.box1
   idle_touch_button_size: "60"
   idle_touch_button_x_min: "130"
   idle_touch_button_x_max: "190"
@@ -158,7 +158,11 @@ binary_sensor:
       - homeassistant.service:
           service: automation.trigger
           data:
-            entity_id: ${idle_touch_button_automation}
+            entity_id: !lambda |-
+              if (id(idle_touch_button_automation).state.empty()) {
+                return std::string("${idle_touch_button_automation_default}");
+              }
+              return id(idle_touch_button_automation).state;
   - platform: gpio
     pin:
       number: GPIO21
@@ -894,6 +898,15 @@ text_sensor:
           std::string truncated = esphome::str_truncate(name.c_str(),31);
           id(text_response).state = (truncated+"...").c_str();
         }
+
+text:
+  - platform: template
+    id: idle_touch_button_automation
+    name: Idle Button Automation
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    initial_value: "${idle_touch_button_automation_default}"
 
 color:
   - id: idle_color
