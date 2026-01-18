@@ -159,10 +159,13 @@ binary_sensor:
             then:
               - switch.turn_on: mute
               - light.turn_off: led
-              - component.turn_off: s3_box_lcd
+              - lambda: |-
+                  id(s3_box_lcd).command(0x10);
     on_press:
       then:
-        - component.turn_on: s3_box_lcd
+        - lambda: |-
+            id(s3_box_lcd).command(0x11);
+            id(s3_box_lcd).update();
         - light.turn_on: led
         - if:
             condition:
