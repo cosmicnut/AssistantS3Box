@@ -7,7 +7,7 @@
 substitutions:
   name: esp32-s3-box-3
   friendly_name: ESP32 S3 Box 3
-  assets_base_url: https://github.com/openai/AssistantS3Box/raw/main
+  assets_base_url: https://github.com/cosmicnut/AssistantS3Box/raw/main
   loading_illustration_file: ${assets_base_url}/casita/loading_320_240.png
   idle_illustration_file: ${assets_base_url}/casita/idle_320_240.png
   listening_illustration_file: ${assets_base_url}/casita/listening_320_240.png
