@@ -179,10 +179,10 @@ binary_sensor:
             then:
               - switch.turn_on: mute
               - light.turn_off: led
-              - display.turn_off: s3_box_lcd
+              - component.turn_off: s3_box_lcd
     on_press:
       then:
-        - display.turn_on: s3_box_lcd
+        - component.turn_on: s3_box_lcd
         - light.turn_on: led
         - if:
             condition:
